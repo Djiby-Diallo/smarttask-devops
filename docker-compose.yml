@@ -1,0 +1,50 @@
+services:
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: smarttask-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - smarttask-network
+
+  backend:
+    build:
+      context: ./backend
+    container_name: smarttask-backend
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: database
+      DB_PORT: 3306
+      DB_NAME: smarttask
+      DB_USER: smarttask
+      DB_PASSWORD: smarttask_password
+    depends_on:
+      - database
+    networks:
+      - smarttask-network
+
+  database:
+    image: mysql:9.7
+    container_name: smarttask-database
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: smarttask
+      MYSQL_USER: smarttask
+      MYSQL_PASSWORD: smarttask_password
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - smarttask-db-data:/var/lib/mysql
+    networks:
+      - smarttask-network
+
+networks:
+  smarttask-network:
+    driver: bridge
+
+volumes:
+  smarttask-db-data:
