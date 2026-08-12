@@ -53,6 +53,18 @@ pipeline {
                 sh "docker push ${FRONTEND_IMAGE}:latest"
             }
         }
+
+        stage("Deploy") {
+            steps {
+                echo "=== Deploiement de SmartTask ==="
+
+                sh "docker compose pull"
+
+                sh "docker compose up -d"
+
+                sh "docker compose ps"
+            }
+        }
     }
 
     post {

@@ -1,19 +1,17 @@
 services:
 
   frontend:
-    build:
-      context: ./frontend
+    image: djibydiallo/smarttask-frontend:latest
     container_name: smarttask-frontend
     ports:
-      - "8080:80"
+      - "8081:80"
     depends_on:
       - backend
     networks:
       - smarttask-network
 
   backend:
-    build:
-      context: ./backend
+    image: djibydiallo/smarttask-backend:latest
     container_name: smarttask-backend
     ports:
       - "3000:3000"
@@ -24,7 +22,8 @@ services:
       DB_USER: smarttask
       DB_PASSWORD: smarttask_password
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     networks:
       - smarttask-network
 
@@ -39,6 +38,11 @@ services:
       MYSQL_ROOT_PASSWORD: root_password
     volumes:
       - smarttask-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
       - smarttask-network
 
